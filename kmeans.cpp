@@ -17,6 +17,7 @@ list<list<pair<int,int>>> RandomPartition(list<pair<int, int>> points, int k);
 list<pair<int, int>> ComputeCentroids(list<list<pair<int, int>>> partitionedPoints, int k);
 list<list<pair<int,int>>> Recluster(list<pair<int, int>> points, list<pair<int, int>> centroids, int k);
 void PrintClusters(list<list<pair<int, int>>> partitions);
+bool areEquivalent(list<list<pair<int,int>>> oldClusters, list<list<pair<int,int>>> newClusters);
 
 int main(int argc, char* argv[]) {
 
@@ -35,13 +36,15 @@ int main(int argc, char* argv[]) {
 
     list<list<pair<int, int>>> partitions = RandomPartition(points, k);
 
-    PrintClusters(partitions);
+    // PrintClusters(partitions);
 
     auto centroids = ComputeCentroids(partitions, k);
 
     auto newClusters = Recluster(points, centroids, k);
 
-    PrintClusters(newClusters);
+    // PrintClusters(newClusters);
+
+    // cout << "Are Equivalent: " << areEquivalent(newClusters, newClusters);
     
 }
 
@@ -157,4 +160,17 @@ void PrintClusters(list<list<pair<int, int>>> partitions) {
         }
         clusterNumber++;
     }
+}
+
+bool areEquivalent(list<list<pair<int,int>>> oldClusters, list<list<pair<int,int>>> newClusters) {
+    auto it1 = oldClusters.begin();
+    auto it2 = newClusters.begin();
+
+    for (; it1 != oldClusters.end() && it2 != newClusters.end(); it1++, it2++) {
+        if (*it1 != *it2) {
+            return false; // Pairs are not equal
+        }
+    }
+
+    return true;
 }
