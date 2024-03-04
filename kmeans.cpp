@@ -11,6 +11,7 @@ list<pair<int, int>> ReadFile(string filename);
 int Distance(pair<int, int> point);
 
 int main(int argc, char* argv[]) {
+
     int k;
     try {
         k = stoi(argv[1]);
@@ -36,10 +37,8 @@ list<pair<int, int>> ReadFile(string filename) {
     fin.open(filename);
 
     if (!fin) {
-
         cout << "Invalid file. File not found.\n";
         exit(EXIT_FAILURE);
-
     }
 
     int point1, point2;
@@ -50,7 +49,6 @@ list<pair<int, int>> ReadFile(string filename) {
         istringstream iss(line);
 
         if (!(iss >> point1 >> point2)) {
-
             std::cerr << "Error reading line: " << line << std::endl;
             continue;
         }
