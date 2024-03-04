@@ -34,22 +34,17 @@ int main(int argc, char* argv[]) {
 
     list<pair<int, int>> points = ReadFile(file);
     
-
-    list<list<pair<int, int>>> partitions = RandomPartition(points, k);
-
-    // PrintClusters(partitions);
-
-    auto centroids = ComputeCentroids(partitions, k);
-
-    auto newClusters = Recluster(points, centroids, k);
-
-    // PrintClusters(newClusters);
-
-    // cout << "Are Equivalent: " << areEquivalent(newClusters, newClusters);
-    PrintClusters(Kmeans(points, k));
-    
+    auto finalClusters = (Kmeans(points, k));
+    PrintClusters(finalClusters);
 }
 
+/*
+    Readfile takes a filename and parses it into a list of points. 
+    It takes a string "filename" as it's parameter and expects the 
+    file to be a text file with the integer coordinates of a point 
+    on each line. 
+    It returns the points as a list of pairs.
+*/
 list<pair<int, int>> ReadFile(string filename) {
 
     list<pair<int, int>> dataPoints;
@@ -82,10 +77,20 @@ list<pair<int, int>> ReadFile(string filename) {
     return dataPoints;   
 }
 
+/*
+    Distance takes two integer pairs and calculates the Euclidean distance
+    between them. It returns the distance as an integer.
+*/
 int Distance(pair<int,int> point1, pair<int,int> point2) {
     return sqrt(pow((point2.first-point1.first), 2) + pow((point2.second-point1.second), 2));
 }
 
+/*
+    RandomPartition takes a list of integer points and an integer value for k
+    and randomly partitions the points into k cluseters. It returns a list of 
+    integer pair lists. Each integer pair list is a cluster. If any of the 
+    clusters are empty, it repartitions the points.
+*/
 list<list<pair<int,int>>> RandomPartition(list<pair<int, int>> points, int k) {
 
     list<list<pair<int,int>>> partitions(k);
@@ -110,13 +115,16 @@ list<list<pair<int,int>>> RandomPartition(list<pair<int, int>> points, int k) {
     return partitions;
 }
 
+/*
+    ComputeCentroids takes a list of integer pair lists and an integer value for k.
+    It computes the centroids for each of the k clusters, which it returns as
+    a list of k integer pairs.
+*/
 list<pair<int, int>> ComputeCentroids(list<list<pair<int, int>>> partitionedPoints, int k) {
     
     list<pair<int, int>> centroids(k);
-    cout << "Point 1\n";
     int i = 0;
     for (auto cluster : partitionedPoints) {
-        cout << "Loop " << i << "\n";
         int sumX = 0;
         int sumY = 0;
         for (auto point : cluster) {
@@ -127,11 +135,9 @@ list<pair<int, int>> ComputeCentroids(list<list<pair<int, int>>> partitionedPoin
         if (cluster.size() == 0) {
             continue;
         }
-        cout << "Before division\n";
-        cout << cluster.size();
+        
         int centerPointX = sumX / cluster.size();
         int centerPointY = sumY / cluster.size();
-        cout << "After division\n";
 
         pair<int, int> centroid = make_pair(centerPointX, centerPointY);
         auto it = centroids.begin();
@@ -139,13 +145,15 @@ list<pair<int, int>> ComputeCentroids(list<list<pair<int, int>>> partitionedPoin
         *it = centroid;
         i++;
     }
-    cout << "CENTROIDS!\n";
-    for (auto centroid : centroids) {
-        cout << centroid.first << " " << centroid.second << endl;
-    }
     return centroids;
 }
 
+/*
+    Recluster reclusters points into the cluster with which they have the closest centroid. It takes
+    a list of integer pairs as points, a list of integer pairs as centroids, and an integer value k.
+    It returns the newly clustered points as a list of k integer pair lists, each being an individual
+    cluster.
+*/
 list<list<pair<int,int>>> Recluster(list<pair<int, int>> points, list<pair<int, int>> centroids, int k) {
     list<list<pair<int, int>>> clusters(k);
 
@@ -168,6 +176,10 @@ list<list<pair<int,int>>> Recluster(list<pair<int, int>> points, list<pair<int, 
     return clusters;  
 }
 
+/*
+    PrintCluseters takes a list of integer pair lists and 
+    displays the points in each cluster.
+*/
 void PrintClusters(list<list<pair<int, int>>> partitions) {
     int clusterNumber = 1;
     for (auto partition : partitions) {
@@ -179,6 +191,9 @@ void PrintClusters(list<list<pair<int, int>>> partitions) {
     }
 }
 
+/*
+    areEquivalent determines if the points in two clusters are equivalent.
+*/
 bool areEquivalent(list<list<pair<int,int>>> oldClusters, list<list<pair<int,int>>> newClusters) {
     if (oldClusters.size() != newClusters.size()) {
         return false;
@@ -189,35 +204,27 @@ bool areEquivalent(list<list<pair<int,int>>> oldClusters, list<list<pair<int,int
 
     for (; it1 != oldClusters.end() && it2 != newClusters.end(); it1++, it2++) {
         if (*it1 != *it2) {
-            return false; // Pairs are not equal
+            return false; 
         }
     }
 
     return true;
 }
 
+/*
+    Kmeans takes a list of integer pairs as points and and integer value k.
+    It then clusters the points into k clusters. It returns the clusters 
+    as a list of k integer pair lists.
+*/
 list<list<pair<int,int>>> Kmeans(list<pair<int, int>> points, int k) {
     list<list<pair<int,int>>> oldClusters = RandomPartition(points, k);
-    cout << "Initial partitions: " << oldClusters.size() << endl;
     list<list<pair<int,int>>> newClusters(k);
-    cout << "First new Clusters!: " << newClusters.size() << endl;
     list<pair<int,int>> centroids = ComputeCentroids(oldClusters, k);
     
     while (!areEquivalent(oldClusters, newClusters)) {
-        cout << "Old Clusters:\n";
-        // PrintClusters(oldClusters);
-        
-        
-        cout << "Old Clusters updated:\n";
         oldClusters = newClusters;
-        cout << "Reclustering:\n";
         newClusters = Recluster(points, centroids, k);
-        cout << "Computing new Centroids!\n";
         centroids = ComputeCentroids(newClusters, k);
-        cout << "New Updated Clussters:\n";
-        // PrintClusters(newClusters);
-        cout << "Are equivalent: " << areEquivalent(oldClusters, newClusters) << endl;
-
     }
     return newClusters;
 }
