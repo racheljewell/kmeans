@@ -14,6 +14,7 @@ using namespace std;
 list<pair<int, int>> ReadFile(string filename);
 int Distance(pair<int, int> point);
 list<list<pair<int,int>>> RandomPartition(list<pair<int, int>> points, int k);
+list<pair<int, int>> ComputeCentroids(list<list<pair<int, int>>> partitionedPoints, int k);
 
 int main(int argc, char* argv[]) {
 
@@ -31,6 +32,12 @@ int main(int argc, char* argv[]) {
     
 
     list<list<pair<int, int>>> partitions = RandomPartition(points, k);
+
+    auto centroids = ComputeCentroids(partitions, k);
+
+    for (auto centroid : centroids) {
+        cout << "(" << centroid.first << ", " << centroid.second << ")\n";
+    }
     
 }
 
@@ -92,4 +99,25 @@ list<list<pair<int,int>>> RandomPartition(list<pair<int, int>> points, int k) {
     }
     
     return partitions;
+}
+
+list<pair<int, int>> ComputeCentroids(list<list<pair<int, int>>> partitionedPoints, int k) {
+    
+    list<pair<int, int>> centroids;
+
+    for (auto cluster : partitionedPoints) {
+        int sumX = 0;
+        int sumY = 0;
+        for (auto point : cluster) {
+            sumX += point.first;
+            sumY += point.second;
+        }
+
+        int centerPointX = sumX / cluster.size();
+        int centerPointY = sumY / cluster.size();
+
+        centroids.push_back(make_pair(centerPointX, centerPointY));
+    }
+
+    return centroids;
 }
