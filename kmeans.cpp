@@ -4,6 +4,7 @@
 #include <list>
 #include <utility>
 #include <sstream>
+#include <cmath>
 
 using namespace std;
 
@@ -58,6 +59,9 @@ list<pair<int, int>> ReadFile(string filename) {
 
     fin.close();
 
-    return dataPoints;
-    
+    return dataPoints;   
+}
+
+int Distance(pair<int,int> point1, pair<int,int> point2) {
+    return sqrt(pow((point2.first-point1.first), 2) + pow((point2.second-point1.second), 2));
 }
