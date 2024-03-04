@@ -18,6 +18,7 @@ list<pair<int, int>> ComputeCentroids(list<list<pair<int, int>>> partitionedPoin
 list<list<pair<int,int>>> Recluster(list<pair<int, int>> points, list<pair<int, int>> centroids, int k);
 void PrintClusters(list<list<pair<int, int>>> partitions);
 bool areEquivalent(list<list<pair<int,int>>> oldClusters, list<list<pair<int,int>>> newClusters);
+list<list<pair<int,int>>> Kmeans(list<pair<int, int>> points, int k);
 
 int main(int argc, char* argv[]) {
 
@@ -45,6 +46,7 @@ int main(int argc, char* argv[]) {
     // PrintClusters(newClusters);
 
     // cout << "Are Equivalent: " << areEquivalent(newClusters, newClusters);
+    PrintClusters(Kmeans(points, k));
     
 }
 
@@ -110,9 +112,11 @@ list<list<pair<int,int>>> RandomPartition(list<pair<int, int>> points, int k) {
 
 list<pair<int, int>> ComputeCentroids(list<list<pair<int, int>>> partitionedPoints, int k) {
     
-    list<pair<int, int>> centroids;
-
+    list<pair<int, int>> centroids(k);
+    cout << "Point 1\n";
+    int i = 0;
     for (auto cluster : partitionedPoints) {
+        cout << "Loop " << i << "\n";
         int sumX = 0;
         int sumY = 0;
         for (auto point : cluster) {
@@ -120,12 +124,25 @@ list<pair<int, int>> ComputeCentroids(list<list<pair<int, int>>> partitionedPoin
             sumY += point.second;
         }
 
+        if (cluster.size() == 0) {
+            continue;
+        }
+        cout << "Before division\n";
+        cout << cluster.size();
         int centerPointX = sumX / cluster.size();
         int centerPointY = sumY / cluster.size();
+        cout << "After division\n";
 
-        centroids.push_back(make_pair(centerPointX, centerPointY));
+        pair<int, int> centroid = make_pair(centerPointX, centerPointY);
+        auto it = centroids.begin();
+        advance(it, i);
+        *it = centroid;
+        i++;
     }
-
+    cout << "CENTROIDS!\n";
+    for (auto centroid : centroids) {
+        cout << centroid.first << " " << centroid.second << endl;
+    }
     return centroids;
 }
 
@@ -163,6 +180,10 @@ void PrintClusters(list<list<pair<int, int>>> partitions) {
 }
 
 bool areEquivalent(list<list<pair<int,int>>> oldClusters, list<list<pair<int,int>>> newClusters) {
+    if (oldClusters.size() != newClusters.size()) {
+        return false;
+    }
+
     auto it1 = oldClusters.begin();
     auto it2 = newClusters.begin();
 
@@ -173,4 +194,30 @@ bool areEquivalent(list<list<pair<int,int>>> oldClusters, list<list<pair<int,int
     }
 
     return true;
+}
+
+list<list<pair<int,int>>> Kmeans(list<pair<int, int>> points, int k) {
+    list<list<pair<int,int>>> oldClusters = RandomPartition(points, k);
+    cout << "Initial partitions: " << oldClusters.size() << endl;
+    list<list<pair<int,int>>> newClusters(k);
+    cout << "First new Clusters!: " << newClusters.size() << endl;
+    list<pair<int,int>> centroids = ComputeCentroids(oldClusters, k);
+    
+    while (!areEquivalent(oldClusters, newClusters)) {
+        cout << "Old Clusters:\n";
+        // PrintClusters(oldClusters);
+        
+        
+        cout << "Old Clusters updated:\n";
+        oldClusters = newClusters;
+        cout << "Reclustering:\n";
+        newClusters = Recluster(points, centroids, k);
+        cout << "Computing new Centroids!\n";
+        centroids = ComputeCentroids(newClusters, k);
+        cout << "New Updated Clussters:\n";
+        // PrintClusters(newClusters);
+        cout << "Are equivalent: " << areEquivalent(oldClusters, newClusters) << endl;
+
+    }
+    return newClusters;
 }
