@@ -8,6 +8,7 @@
 #include <random>
 #include <ctime>
 #include <iterator>
+#include <sstream>
 
 using namespace std;
 
@@ -19,6 +20,7 @@ list<list<pair<int,int>>> Recluster(list<pair<int, int>> points, list<pair<int, 
 void PrintClusters(list<list<pair<int, int>>> partitions);
 bool areEquivalent(list<list<pair<int,int>>> oldClusters, list<list<pair<int,int>>> newClusters);
 list<list<pair<int,int>>> Kmeans(list<pair<int, int>> points, int k);
+bool ToFile(list<list<pair<int,int>>> clusters);
 
 int main(int argc, char* argv[]) {
 
@@ -35,7 +37,8 @@ int main(int argc, char* argv[]) {
     list<pair<int, int>> points = ReadFile(file);
     
     auto finalClusters = (Kmeans(points, k));
-    PrintClusters(finalClusters);
+    // PrintClusters(finalClusters);
+    ToFile(finalClusters);
 }
 
 /*
@@ -227,4 +230,34 @@ list<list<pair<int,int>>> Kmeans(list<pair<int, int>> points, int k) {
         centroids = ComputeCentroids(newClusters, k);
     }
     return newClusters;
+}
+
+bool ToFile(list<list<pair<int,int>>> clusters) {
+    int clusterNumber = 1;
+    stringstream output;
+    for (auto cluster : clusters) {
+        for (auto point: cluster) {
+            
+            output << to_string(point.first) << "\t" << to_string(point.second) << "\t" << to_string(clusterNumber) << endl;
+        }
+        clusterNumber++;
+    }
+
+    ofstream outputFile("./output/output.txt");
+
+    if (!outputFile.is_open()) {
+        cerr << "Error: Unable to open file for writing." << endl;
+        return false; 
+    }
+
+    outputFile << output.str();
+
+    if (outputFile.fail()) {
+        cerr << "Error: Failed to write to file." << endl;
+        outputFile.close(); // Close the file
+        return false; // Return an error code
+    }
+
+    outputFile.close();
+    return true;
 }
