@@ -5,11 +5,15 @@
 #include <utility>
 #include <sstream>
 #include <cmath>
+#include <random>
+#include <ctime>
+#include <iterator>
 
 using namespace std;
 
 list<pair<int, int>> ReadFile(string filename);
 int Distance(pair<int, int> point);
+list<list<pair<int,int>>> RandomPartition(list<pair<int, int>> points, int k);
 
 int main(int argc, char* argv[]) {
 
@@ -24,10 +28,10 @@ int main(int argc, char* argv[]) {
     string file = argv[2];
 
     list<pair<int, int>> points = ReadFile(file);
+    
 
-    for (pair<int, int> p : points) {
-        cout << "("<< p.first << ", " << p.second << ")\n";
-    }
+    list<list<pair<int, int>>> partitions = RandomPartition(points, k);
+    
 }
 
 list<pair<int, int>> ReadFile(string filename) {
@@ -64,4 +68,28 @@ list<pair<int, int>> ReadFile(string filename) {
 
 int Distance(pair<int,int> point1, pair<int,int> point2) {
     return sqrt(pow((point2.first-point1.first), 2) + pow((point2.second-point1.second), 2));
+}
+
+list<list<pair<int,int>>> RandomPartition(list<pair<int, int>> points, int k) {
+
+    list<list<pair<int,int>>> partitions(k);
+
+    for (pair<int, int> p : points) {
+        random_device rd;
+        mt19937 gen(rd());
+        uniform_int_distribution<> dis(0, k-1);
+        int clusterNumber = dis(gen);
+
+        auto it = partitions.begin();
+        advance(it, clusterNumber);
+        it->push_back(p);
+    }
+    
+    for (auto list : partitions) {
+        if (list.empty()) {
+            return RandomPartition(points, k);
+        }
+    }
+    
+    return partitions;
 }
