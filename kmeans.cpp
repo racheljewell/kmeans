@@ -15,6 +15,8 @@ list<pair<int, int>> ReadFile(string filename);
 int Distance(pair<int, int> point);
 list<list<pair<int,int>>> RandomPartition(list<pair<int, int>> points, int k);
 list<pair<int, int>> ComputeCentroids(list<list<pair<int, int>>> partitionedPoints, int k);
+list<list<pair<int,int>>> Recluster(list<pair<int, int>> points, list<pair<int, int>> centroids, int k);
+void PrintClusters(list<list<pair<int, int>>> partitions);
 
 int main(int argc, char* argv[]) {
 
@@ -33,11 +35,13 @@ int main(int argc, char* argv[]) {
 
     list<list<pair<int, int>>> partitions = RandomPartition(points, k);
 
+    PrintClusters(partitions);
+
     auto centroids = ComputeCentroids(partitions, k);
 
-    for (auto centroid : centroids) {
-        cout << "(" << centroid.first << ", " << centroid.second << ")\n";
-    }
+    auto newClusters = Recluster(points, centroids, k);
+
+    PrintClusters(newClusters);
     
 }
 
@@ -120,4 +124,37 @@ list<pair<int, int>> ComputeCentroids(list<list<pair<int, int>>> partitionedPoin
     }
 
     return centroids;
+}
+
+list<list<pair<int,int>>> Recluster(list<pair<int, int>> points, list<pair<int, int>> centroids, int k) {
+    list<list<pair<int, int>>> clusters(k);
+
+    for (auto point: points) {
+        int clusterNumber = 0;
+        int minDistance = INT_MAX;
+        int closestCluster;
+        for (auto centroid : centroids) {
+            int distance = Distance(point, centroid);
+            if (distance < minDistance) {
+                minDistance = distance;
+                closestCluster = clusterNumber;
+            }
+            clusterNumber++;
+        }
+        auto it = clusters.begin();
+        advance(it, closestCluster);
+        it->push_back(point);
+    } 
+    return clusters;  
+}
+
+void PrintClusters(list<list<pair<int, int>>> partitions) {
+    int clusterNumber = 1;
+    for (auto partition : partitions) {
+        cout << "Cluster " << clusterNumber << ": \n";
+        for (auto point : partition) {
+            cout << "(" << point.first << ", " << point.second << ")\n";
+        }
+        clusterNumber++;
+    }
 }
