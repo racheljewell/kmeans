@@ -1,4 +1,5 @@
 #include <iostream>
+#include <climits>
 #include <fstream>
 #include <string>
 #include <list>
@@ -232,6 +233,13 @@ list<list<pair<int,int>>> Kmeans(list<pair<int, int>> points, int k) {
     return newClusters;
 }
 
+/*
+ *   ToFile takes a list of integer pair lists, clusters, converts
+ *   the values into strings in the form "point1  point2  cluster$".
+ *   The string is then saved to a file "output.txt" in a directory
+ *   "output". Returns True if write to file is successful, otherwise
+ *   False.
+*/
 bool ToFile(list<list<pair<int,int>>> clusters) {
     int clusterNumber = 1;
     stringstream output;

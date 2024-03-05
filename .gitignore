@@ -15,6 +15,7 @@
 *.exe
 *.out
 *.app
+*.txt
 
 # CMake build directory
 build/
