@@ -2,7 +2,7 @@
 
 A small program implementing the k-means algorithm.
 This program is written in C++ and can be run on
-any system with C++11 installed. 
+any system with C++11 installed.
 
 In a Linux environment:
 
@@ -16,7 +16,6 @@ To run:\
 The program expects an integer value as a "k" value, and a
 text file continaing point values. It expects the text file
 to be in the following format:
-
 
 point1x  point1y\
 point2x point2y\
